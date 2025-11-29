@@ -1,0 +1,31 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: app_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build: .
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/app_db?schema=public
+      JWT_SECRET: change_me
+      BCRYPT_SALT_ROUNDS: 10
+    ports:
+      - "${API_PORT:-3000}:3000"
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+      - /app/node_modules
+    entrypoint: ["sh", "-c", "sh ./entrypoint.sh"]
+
+volumes:
+  pgdata:

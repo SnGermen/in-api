@@ -1,0 +1,139 @@
+paths:
+  /auth/login:
+    post:
+      summary: Login user
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: OK
+  /auth/register:
+    post:
+      summary: Register user
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /auth/me:
+    get:
+      summary: Get current user
+      tags:
+        - Auth
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+    patch:
+      summary: Update current user
+      tags:
+        - Auth
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: OK
+  /auth/password:
+    patch:
+      summary: Change password
+      tags:
+        - Auth
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: OK
+  /auth/me/avatar:
+    patch:
+      summary: Set avatar
+      tags:
+        - Auth
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mediaId:
+                  type: string
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: Clear avatar
+      tags:
+        - Auth
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+  /auth/check-username:
+    get:
+      summary: Check username availability
+      tags:
+        - Auth
+      parameters:
+        - in: query
+          name: username
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /auth/check-email:
+    get:
+      summary: Check email availability
+      tags:
+        - Auth
+      parameters:
+        - in: query
+          name: email
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - identifier
+        - password
+      properties:
+        identifier:
+          type: string
+          description: Username or email
+        password:
+          type: string

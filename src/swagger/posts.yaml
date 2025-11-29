@@ -1,0 +1,68 @@
+paths:
+  /posts:
+    get:
+      summary: List posts
+      tags:
+        - Posts
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Create post
+      tags:
+        - Posts
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+  /posts/{id}:
+    get:
+      summary: Get post by id
+      tags:
+        - Posts
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+    patch:
+      summary: Update post
+      tags:
+        - Posts
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: Delete post
+      tags:
+        - Posts
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK

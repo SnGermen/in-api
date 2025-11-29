@@ -1,0 +1,33 @@
+paths:
+  /reports:
+    get:
+      summary: List reports (admin)
+      tags:
+        - Admin
+      responses:
+        '200':
+          description: OK
+  /reports/{id}/status:
+    post:
+      summary: Update report status (admin)
+      tags:
+        - Admin
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [OPEN, IN_REVIEW, RESOLVED, REJECTED]
+      responses:
+        '200':
+          description: OK

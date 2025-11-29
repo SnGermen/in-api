@@ -1,0 +1,73 @@
+paths:
+  /posts/{id}/comments:
+    get:
+      summary: List post comments
+      tags:
+        - Comments
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Add comment to post
+      tags:
+        - Comments
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+      responses:
+        '201':
+          description: Created
+  /comments/{id}:
+    patch:
+      summary: Update comment
+      tags:
+        - Comments
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: Remove comment
+      tags:
+        - Comments
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK

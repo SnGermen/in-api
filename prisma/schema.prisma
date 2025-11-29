@@ -1,0 +1,276 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ==========================
+// Enums
+// ==========================
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum FollowStatus {
+  APPROVED
+  PENDING
+}
+
+enum MediaType {
+  IMAGE
+}
+
+enum NotificationType {
+  LIKE_POST
+  LIKE_COMMENT
+  COMMENT
+  FOLLOW
+  FOLLOW_ACCEPTED
+  POST_SAVED
+}
+
+enum EntityType {
+  POST
+  COMMENT
+  USER
+}
+
+enum ReportStatus {
+  OPEN
+  IN_REVIEW
+  RESOLVED
+  REJECTED
+}
+
+enum BanAction {
+  BAN
+  UNBAN
+}
+
+// ==========================
+// Models
+// ==========================
+
+model User {
+  id            String  @id @default(uuid())
+  email         String  @unique
+  username      String  @unique
+  passwordHash  String
+  fullName      String?
+  bio           String?
+  isPrivate     Boolean @default(false)
+  role          Role    @default(USER)
+  isBanned      Boolean @default(false)
+  avatarMediaId String? @unique
+  avatarMedia   Media?  @relation("UserAvatar", fields: [avatarMediaId], references: [id])
+
+  posts              Post[]
+  comments           Comment[]
+  stories            Story[]
+  media              Media[]        @relation("UserMedia")
+  followsAsFollower  Follow[]       @relation("Follower")
+  followsAsFollowing Follow[]       @relation("Following")
+  postLikes          PostLike[]
+  commentLikes       CommentLike[]
+  savedPosts         SavedPost[]
+  notifications      Notification[] @relation("UserNotifications")
+  actions            Notification[] @relation("ActorNotifications")
+  reports            Report[]       @relation("ReporterReports")
+  bans               BanLog[]       @relation("UserBans")
+  adminBans          BanLog[]       @relation("AdminBans")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([createdAt])
+}
+
+model Follow {
+  id          String       @id @default(uuid())
+  followerId  String
+  followingId String
+  status      FollowStatus @default(APPROVED)
+  createdAt   DateTime     @default(now())
+
+  follower  User @relation("Follower", fields: [followerId], references: [id])
+  following User @relation("Following", fields: [followingId], references: [id])
+
+  @@unique([followerId, followingId])
+  @@index([followingId, status])
+}
+
+model Post {
+  id        String    @id @default(uuid())
+  authorId  String
+  caption   String?
+  location  String?
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  author   User        @relation(fields: [authorId], references: [id])
+  media    PostMedia[]
+  comments Comment[]
+  likes    PostLike[]
+  saves    SavedPost[]
+
+  @@index([authorId])
+  @@index([createdAt])
+}
+
+model PostMedia {
+  id      String @id @default(uuid())
+  postId  String
+  mediaId String
+  order   Int    @default(0)
+
+  post  Post  @relation(fields: [postId], references: [id])
+  media Media @relation(fields: [mediaId], references: [id])
+
+  @@index([postId])
+}
+
+model Comment {
+  id        String    @id @default(uuid())
+  postId    String
+  authorId  String
+  text      String
+  parentId  String?
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  post    Post          @relation(fields: [postId], references: [id])
+  author  User          @relation(fields: [authorId], references: [id])
+  parent  Comment?      @relation("CommentReplies", fields: [parentId], references: [id])
+  replies Comment[]     @relation("CommentReplies")
+  likes   CommentLike[]
+
+  @@index([postId])
+  @@index([createdAt])
+}
+
+model PostLike {
+  id        String   @id @default(uuid())
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([postId, userId])
+  @@index([postId])
+}
+
+model CommentLike {
+  id        String   @id @default(uuid())
+  commentId String
+  userId    String
+  createdAt DateTime @default(now())
+
+  comment Comment @relation(fields: [commentId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@unique([commentId, userId])
+  @@index([commentId])
+}
+
+model Story {
+  id        String   @id @default(uuid())
+  authorId  String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  author User         @relation(fields: [authorId], references: [id])
+  media  StoryMedia[]
+}
+
+model StoryMedia {
+  id      String @id @default(uuid())
+  storyId String
+  mediaId String
+
+  story Story @relation(fields: [storyId], references: [id])
+  media Media @relation(fields: [mediaId], references: [id])
+
+  @@index([storyId])
+}
+
+model SavedPost {
+  id        String   @id @default(uuid())
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([postId, userId])
+  @@index([userId])
+}
+
+model Notification {
+  id         String           @id @default(uuid())
+  userId     String
+  actorId    String
+  type       NotificationType
+  entityType EntityType
+  entityId   String
+  isRead     Boolean          @default(false)
+  createdAt  DateTime         @default(now())
+
+  user  User @relation("UserNotifications", fields: [userId], references: [id])
+  actor User @relation("ActorNotifications", fields: [actorId], references: [id])
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Report {
+  id         String       @id @default(uuid())
+  reporterId String
+  targetType EntityType
+  targetId   String
+  reason     String
+  status     ReportStatus @default(OPEN)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  reporter User @relation("ReporterReports", fields: [reporterId], references: [id])
+
+  @@index([status])
+}
+
+model BanLog {
+  id        String    @id @default(uuid())
+  userId    String
+  adminId   String
+  action    BanAction
+  reason    String?
+  createdAt DateTime  @default(now())
+
+  user  User @relation("UserBans", fields: [userId], references: [id])
+  admin User @relation("AdminBans", fields: [adminId], references: [id])
+
+  @@index([userId])
+}
+
+model Media {
+  id        String    @id @default(uuid())
+  ownerId   String
+  type      MediaType
+  path      String
+  width     Int?
+  height    Int?
+  createdAt DateTime  @default(now())
+
+  owner      User         @relation("UserMedia", fields: [ownerId], references: [id])
+  avatarUser User?        @relation("UserAvatar")
+  postMedia  PostMedia[]
+  storyMedia StoryMedia[]
+}

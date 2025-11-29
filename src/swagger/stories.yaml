@@ -1,0 +1,55 @@
+paths:
+  /stories:
+    get:
+      summary: List accessible stories
+      tags:
+        - Stories
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Create story
+      tags:
+        - Stories
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mediaIds:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Created
+  /users/{id}/stories:
+    get:
+      summary: List user stories
+      tags:
+        - Stories
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /stories/{id}:
+    delete:
+      summary: Remove story
+      tags:
+        - Stories
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK

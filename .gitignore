@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.env
+.DS_Store
+
+# Runtime uploads (keep structure markers)
+uploads/
+!uploads/.gitkeep
+!uploads/images/.gitkeep
