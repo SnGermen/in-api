@@ -9,7 +9,7 @@
     "start": "node dist/server.js",
     "lint": "eslint --max-warnings=0 \"src/**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
-    "prisma:generate": "prisma generate",
+    "prisma:gene-rate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "prisma db seed",
     "db:reset": "sh -c 'prisma migrate reset --force || true; prisma db push --accept-data-loss; prisma db seed'"
