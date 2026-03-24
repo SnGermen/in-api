@@ -20,6 +20,8 @@ export default class MediaController extends BaseController {
   constructor() {
     super()
     this.router.post('/', requireAuth, useImageUpload(), this.upload)
+    this.router.options('/:id', this.handleOptions)
+    this.router.get('/:id', this.getMedia)
     this.router.delete('/:id', requireAuth, this.remove)
   }
 
@@ -27,6 +29,21 @@ export default class MediaController extends BaseController {
     const userId = (req as Request & { user?: { id: string } }).user!.id
     const result = await this.service.upload(userId, req.file as Express.Multer.File)
     res.status(201).json(result)
+  }
+
+  handleOptions = (req: Request, res: Response) => {
+    res.header('Access-Control-Allow-Origin', '*')
+    res.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+    res.header('Access-Control-Allow-Headers', 'Content-Type')
+    res.sendStatus(200)
+  }
+
+  getMedia = async (req: Request, res: Response) => {
+    const id = req.params.id
+    const result = await this.service.getMedia(id)
+    res.set('Access-Control-Allow-Origin', '*')
+    res.set('Cache-Control', 'public, max-age=31536000')
+    res.sendFile(result)
   }
 
   remove = async (req: Request, res: Response) => {

@@ -2,7 +2,9 @@ import BaseRepository from '../../core/repositories/BaseRepository'
 
 export default class AuthRepository extends BaseRepository {
   async findByEmailOrUsername(identifier: string) {
-    return this.prisma.user.findFirst({ where: { OR: [{ email: identifier }, { username: identifier }] } })
+    return this.prisma.user.findFirst({
+      where: { OR: [{ email: identifier }, { username: identifier }] }
+    })
   }
 
   async findById(id: string) {
@@ -23,7 +25,10 @@ export default class AuthRepository extends BaseRepository {
     return Boolean(u)
   }
 
-  async updateMe(id: string, data: { fullName?: string | null; bio?: string | null; isPrivate?: boolean }) {
+  async updateMe(
+    id: string,
+    data: { fullName?: string | null; bio?: string | null; isPrivate?: boolean }
+  ) {
     return this.prisma.user.update({ where: { id }, data })
   }
 

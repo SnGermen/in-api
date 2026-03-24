@@ -22,6 +22,16 @@ export default class MediaService extends BaseService {
     return { id: media.id, url, path: relative, width: media.width, height: media.height }
   }
 
+  async getMedia(id: string) {
+    const media = await this.repo.findById(id)
+    if (!media) {
+      const e = new Error('Media not found') as Error & { status?: number }
+      e.status = 404
+      throw e
+    }
+    return path.resolve('uploads', media.path)
+  }
+
   async remove(ownerId: string, id: string) {
     const m = await this.repo.findById(id)
     if (!m) {
