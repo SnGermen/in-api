@@ -11,6 +11,8 @@ function getExtFromMime(mime: string) {
   if (mime === 'image/jpeg') return 'jpg'
   if (mime === 'image/png') return 'png'
   if (mime === 'image/webp') return 'webp'
+  if (mime === 'video/mp4') return 'mp4'
+  if (mime === 'video/webm') return 'webm'
   return 'bin'
 }
 
@@ -35,7 +37,7 @@ export function createImageUpload(userId: string) {
   })
 
   const fileFilter: multer.Options['fileFilter'] = (_req, file, cb) => {
-    const allowed = ['image/jpeg', 'image/png', 'image/webp']
+    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'video/webm']
     if (allowed.includes(file.mimetype)) cb(null, true)
     else cb(new Error('Unsupported file type'))
   }

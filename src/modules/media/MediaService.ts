@@ -17,7 +17,8 @@ export default class MediaService extends BaseService {
     const abs = file.destination ? path.join(file.destination, file.filename) : file.path
     const relStart = path.resolve('uploads')
     const relative = abs.startsWith(relStart) ? path.relative(relStart, abs) : path.basename(abs)
-    const media = await this.repo.create(ownerId, relative, null, null)
+    const type = file.mimetype.startsWith('video/') ? 'VIDEO' : 'IMAGE'
+    const media = await this.repo.create(ownerId, relative, type, null, null)
     const url = `/uploads/${relative.replace(/\\/g, '/')}`
     return { id: media.id, url, path: relative, width: media.width, height: media.height }
   }

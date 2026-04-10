@@ -19,7 +19,8 @@ export default class PostsService extends BaseService {
     }
     const post = await this.repo.createPost(authorId, caption ?? null, null)
     await this.repo.attachMedia(post.id, mediaIds)
-    await this.tags.setPostTagsFromCaption(post.id, caption ?? null)
+    // Tags будут добавлены позже, когда модель Tag будет в БД
+    // await this.tags.setPostTagsFromCaption(post.id, caption ?? null)
     return this.repo.findById(post.id)
   }
 
@@ -46,7 +47,8 @@ export default class PostsService extends BaseService {
       throw e
     }
     await this.repo.updateCaption(id, caption ?? null)
-    await this.tags.setPostTagsFromCaption(id, caption ?? null)
+    // Tags будут обновлены позже, когда модель Tag будет в БД
+    // await this.tags.setPostTagsFromCaption(id, caption ?? null)
     return this.repo.findById(id)
   }
 
@@ -66,11 +68,28 @@ export default class PostsService extends BaseService {
     return { success: true }
   }
 
-  async list(query: { authorId?: string; from?: Date; to?: Date; skip: number; take: number; orderBy: Record<string, 'asc' | 'desc'> }) {
+  async list(query: {
+    authorId?: string
+    from?: Date
+    to?: Date
+    skip: number
+    take: number
+    orderBy: Record<string, 'asc' | 'desc'>
+  }) {
     return this.repo.listAccessibleForUser(undefined, query)
   }
 
-  async listForUser(userId: string, query: { authorId?: string; from?: Date; to?: Date; skip: number; take: number; orderBy: Record<string, 'asc' | 'desc'> }) {
+  async listForUser(
+    userId: string,
+    query: {
+      authorId?: string
+      from?: Date
+      to?: Date
+      skip: number
+      take: number
+      orderBy: Record<string, 'asc' | 'desc'>
+    }
+  ) {
     return this.repo.listAccessibleForUser(userId, query)
   }
 }

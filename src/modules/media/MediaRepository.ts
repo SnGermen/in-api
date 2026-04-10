@@ -1,8 +1,16 @@
 import BaseRepository from '../../core/repositories/BaseRepository'
 
 export default class MediaRepository extends BaseRepository {
-  async create(ownerId: string, pathRel: string, width?: number | null, height?: number | null) {
-    return this.prisma.media.create({ data: { ownerId, type: 'IMAGE', path: pathRel, width: width ?? null, height: height ?? null } })
+  async create(
+    ownerId: string,
+    pathRel: string,
+    type: 'IMAGE' | 'VIDEO',
+    width?: number | null,
+    height?: number | null
+  ) {
+    return this.prisma.media.create({
+      data: { ownerId, type, path: pathRel, width: width ?? null, height: height ?? null }
+    })
   }
 
   async findById(id: string) {
