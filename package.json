@@ -12,7 +12,8 @@
     "prisma:gene-rate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "prisma db seed",
-    "db:reset": "sh -c 'prisma migrate reset --force || true; prisma db push --accept-data-loss; prisma db seed'"
+    "db:reset": "sh -c 'prisma migrate reset --force || true; prisma db push --accept-data-loss; prisma db seed'",
+    "db:clean-debug": "prisma db execute --file scripts/deleteAdminDebugPosts.sql"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"

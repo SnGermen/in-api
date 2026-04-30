@@ -35,7 +35,14 @@ export default class PostsController extends BaseController {
       this.list
     )
     this.router.get('/:id', this.get)
-    this.router.patch('/:id', requireAuth, requireNotBanned, body('caption').optional({ nullable: true }).isString(), validate, this.update)
+    this.router.patch(
+      '/:id',
+      requireAuth,
+      requireNotBanned,
+      body('caption').optional({ nullable: true }).isString(),
+      validate,
+      this.update
+    )
     this.router.delete('/:id', requireAuth, requireNotBanned, this.remove)
   }
 

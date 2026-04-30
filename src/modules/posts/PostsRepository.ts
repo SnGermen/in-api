@@ -4,7 +4,9 @@ import BaseRepository from '../../core/repositories/BaseRepository'
 
 export default class PostsRepository extends BaseRepository {
   async createPost(authorId: string, caption?: string | null, location?: string | null) {
-    return this.prisma.post.create({ data: { authorId, caption: caption ?? null, location: location ?? null } })
+    return this.prisma.post.create({
+      data: { authorId, caption: caption ?? null, location: location ?? null }
+    })
   }
 
   async attachMedia(postId: string, mediaIds: string[]) {
@@ -46,10 +48,11 @@ export default class PostsRepository extends BaseRepository {
   }) {
     const where: Record<string, unknown> = { deletedAt: null }
     if (params.authorId) where['authorId'] = params.authorId
-    if (params.from || params.to) where['createdAt'] = {
-      gte: params.from,
-      lte: params.to
-    }
+    if (params.from || params.to)
+      where['createdAt'] = {
+        gte: params.from,
+        lte: params.to
+      }
     return this.prisma.post.findMany({
       where,
       skip: params.skip,
@@ -63,26 +66,39 @@ export default class PostsRepository extends BaseRepository {
     })
   }
 
-  async listAccessibleForUser(userId: string | undefined, params: {
-    authorId?: string
-    from?: Date
-    to?: Date
-    skip: number
-    take: number
-    orderBy: Record<string, 'asc' | 'desc'>
-  }) {
-    const dateRange: Prisma.PostWhereInput = params.from || params.to ? { createdAt: { gte: params.from, lte: params.to } } : {}
+  async listAccessibleForUser(
+    userId: string | undefined,
+    params: {
+      authorId?: string
+      from?: Date
+      to?: Date
+      skip: number
+      take: number
+      orderBy: Record<string, 'asc' | 'desc'>
+    }
+  ) {
+    const dateRange: Prisma.PostWhereInput =
+      params.from || params.to ? { createdAt: { gte: params.from, lte: params.to } } : {}
     const authorFilter: Prisma.PostWhereInput = params.authorId ? { authorId: params.authorId } : {}
     const accessibility: Prisma.PostWhereInput = userId
       ? {
           OR: [
             { authorId: userId },
             { author: { is: { isPrivate: false } } },
-            { author: { is: { followsAsFollowing: { some: { followerId: userId, status: 'APPROVED' } } } } }
+            {
+              author: {
+                is: { followsAsFollowing: { some: { followerId: userId, status: 'APPROVED' } } }
+              }
+            }
           ]
         }
       : { author: { is: { isPrivate: false } } }
-    const where: Prisma.PostWhereInput = { deletedAt: null, ...dateRange, ...authorFilter, ...accessibility }
+    const where: Prisma.PostWhereInput = {
+      deletedAt: null,
+      ...dateRange,
+      ...authorFilter,
+      ...accessibility
+    }
     return this.prisma.post.findMany({
       where,
       skip: params.skip,

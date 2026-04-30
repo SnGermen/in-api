@@ -76,7 +76,7 @@ export default class PostsService extends BaseService {
     take: number
     orderBy: Record<string, 'asc' | 'desc'>
   }) {
-    return this.repo.listAccessibleForUser(undefined, query)
+    return this.repo.list(query)
   }
 
   async listForUser(
